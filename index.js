@@ -2,11 +2,22 @@
 
 function Lootr (name) {
 
-    this.name         = name || 'root';
+    name = name || 'root';
+    name = this.path(name);
+
+    if (name.indexOf('/') > -1) {
+        throw new Error('You cannot specify depth in branch name');
+    }
+
+    this.name         = name;
     this.items        = [];
     this.branchs      = {};
     this.branchNames  = [];
 }
+
+Lootr.prototype.path = function(path) {
+    return path.replace(/^\//g, '').replace(/\/$/g, '');
+};
 
 Lootr.prototype.add = function(catalogPath, item) {
 
@@ -21,14 +32,14 @@ Lootr.prototype.add = function(catalogPath, item) {
     return this;
 };
 
-Lootr.prototype.branch = function(catalogPath) {
+Lootr.prototype.branch = function(name) {
 
-    return this.getBranch(catalogPath, true);
+    return this.getBranch(name, true);
 };
 
-Lootr.prototype.getBranch = function(catalogPath, create) {
+Lootr.prototype.getBranch = function(name, create) {
 
-    var path = catalogPath.replace(/^\//g, '').replace(/\/$/g, '').split('/');
+    var path = this.path(name).split('/');
 
     if (! this.branchs[path[0]] && path[0] != this.name && create) {
         this.branchNames.push(path[0]);

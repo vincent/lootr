@@ -16,11 +16,40 @@ var loot = new Lootr();
 
 // Check our library is here
 exports['lootr is present'] = function(test) {
+
     test.ok(Lootr, 'Lootr should be an object');
     test.done();
 };
 
-exports['looting setup'] = function(test) {
+exports['looting setup assertions'] = function (test) {
+
+    test.doesNotThrow(
+      function() {
+        new Lootr('/notfaultypath');
+      }, 
+      Error,
+      'Does not fail if /-prefixed named branch'
+    );
+
+    test.doesNotThrow(
+      function() {
+        new Lootr('notfaultypath/');
+      }, 
+      Error,
+      'Does not fail if /-suffixed named branch'
+    );
+
+    test.throws(
+      function() {
+        new Lootr('/faulty/path');
+      }, 
+      Error,
+      'Show fail for faulty named branch'
+    );
+    test.done();
+};
+
+exports['looting usage'] = function(test) {
 
     loot.branch('equipment').add({ name: 'Stuff' });
 
@@ -44,6 +73,8 @@ exports['looting setup'] = function(test) {
     test.ok(loot.roll('/equipment').name === 'Stuff', 'Should loot a useless equipment');
 
     test.ok(all.indexOf(loot.roll('/equipment', 3, 100).name) > -1, 'Should loot any equipment');
+
+    test.ok(all.indexOf(loot.roll('/equipment', Infinity, Infinity).name) > -1, 'Should loot any equipment');
     
     test.ok(weapons.indexOf(loot.roll('/equipment/weapons', 3).name) > -1, 'Should loot a weapon');
     
