@@ -1,6 +1,6 @@
 {
   "name": "lootr",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A simple rpg-like looting system",
   "main": "index.js",
   "scripts": {
@@ -22,7 +22,8 @@
   },
   "homepage": "https://github.com/vincent/lootr",
   "dependencies": {
-    "nodeunit": "^0.9.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "nodeunit": "^0.9.0"    
+  }
 }
