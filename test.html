@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <title>Lootr Test Suite</title>
+    <script src="./vendor/nodeunit/examples/browser/nodeunit.js"></script>
+    <link rel="stylesheet" href="./vendor/nodeunit/share/nodeunit.css"/>
+    <script>
+      this.module  = {};
+    </script>
+    <script src="./index.js"></script>
+    <script>
+      var lootr    = this.module.exports;
+      this.require = function () { return lootr; };
+    </script>
+    <script>
+      this.exports = {};
+    </script>
+    <script src="./test.js"></script>
+  </head>
+  <body>
+    <h1 id="nodeunit-header">Recast.js Test Suite</h1>
+    <script>
+      nodeunit.run({'lootr.tests': exports});
+    </script>
+  </body>
+</html>
