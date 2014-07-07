@@ -12,8 +12,6 @@
 
 var Lootr = require('./index.js');
 
-var loot = new Lootr();
-
 // Check our library is here
 exports['lootr is present'] = function(test) {
 
@@ -51,7 +49,9 @@ exports['looting setup assertions'] = function (test) {
 
 exports['looting usage'] = function(test) {
 
-    loot.branch('equipment').add({ name: 'Stuff' });
+    var loot = new Lootr('equipment');
+
+    loot.add({ name: 'Stuff' });
 
     loot.branch('/equipment/weapons')
         .add({ name: 'Uzi' })

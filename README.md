@@ -1,8 +1,10 @@
-lootr
+Lootr
 =====
 
 A simple rpg-like looting system.
 Heavily inspired from http://journal.stuffwithstuff.com/2014/07/05/dropping-loot
+
+![Lootr !](./vendor/loutre.jpg)
 
 Adding items
 =====
@@ -22,9 +24,11 @@ loot.branch('weapons')
 loot.branch('armor')
 ```
 
-The `branch` method return itself, on which you can `add` items or add nested `branch`s.
+The `branch` method return itself, on which you can `add` items or add nested branchs.
 
-```
+```javascript
+loot.add({ name: 'Stuff' })
+
 loot.branch('/equipment/weapons')
     .add({ name: 'Pistol' })
     .branch('automatic')
@@ -56,3 +60,11 @@ loot.roll('/equipment/armor')                  // one of [ 'Plates', 'Leather' ]
 loot.roll('/equipment/weapons', 3)             // one of [ 'Pistol', 'Uzi' ]
 
 ```
+
+
+Tests
+=====
+
+A simple test suite is available [here](./test.html)
+
+It also works with `npm test`
