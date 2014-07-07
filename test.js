@@ -1,7 +1,5 @@
-'use strict';
-
 /*!
- * lootr
+ * lootr tests
  * https://github.com/vincent/lootr
  *
  * Copyright 2014 Vincent Lark
@@ -9,8 +7,30 @@
  */
 /*jshint onevar: false, indent:4 */
 /*global exports: true, require: true */
+'use strict';
 
 var Lootr = require('./index.js');
+
+function getStuffed () {
+
+    var loot = new Lootr('equipment');
+
+    loot.add({ name: 'Stuff' });
+
+    loot.branch('/equipment/weapons')
+        .add({ name: 'Uzi' })
+        .add({ name: 'Pistol' });
+
+    loot.branch('/equipment/armor')
+        .add({ name: 'Plates' })
+        .add({ name: 'Leather' });
+                        
+    loot.branch('/equipment/armor/tough')
+        .add({ name: 'Military_vest' })
+        .add({ name: 'CSI_cap' });
+
+    return loot;
+}
 
 // Check our library is here
 exports['lootr is present'] = function(test) {
@@ -44,26 +64,16 @@ exports['looting setup assertions'] = function (test) {
       Error,
       'Show fail for faulty named branch'
     );
+
+    var loot = getStuffed();
+    test.strictEqual(loot.allItems().length, 7);
+
     test.done();
 };
 
-exports['looting usage'] = function(test) {
+exports['rollin usage'] = function(test) {
 
-    var loot = new Lootr('equipment');
-
-    loot.add({ name: 'Stuff' });
-
-    loot.branch('/equipment/weapons')
-        .add({ name: 'Uzi' })
-        .add({ name: 'Pistol' });
-
-    loot.branch('/equipment/armor')
-        .add({ name: 'Plates' })
-        .add({ name: 'Leather' });
-                        
-    loot.branch('/equipment/armor/tough')
-        .add({ name: 'Military vest' })
-        .add({ name: 'CSI cap' });
+    var loot = getStuffed();
 
     var weapons     = [ 'Uzi', 'Pistol' ];
     var simplarmors = [ 'Plates', 'Leather' ];
@@ -81,6 +91,66 @@ exports['looting usage'] = function(test) {
     test.ok(simplarmors.indexOf(loot.roll('/equipment/armor').name) > -1, 'Should loot a simple armor');
     
     test.ok([].concat(simplarmors, tougharmors).indexOf(loot.roll('/equipment/armor', 1).name) > -1, 'Should loot an armor');
+
+    test.done();
+};
+
+exports['rollin usage'] = function(test) {
+
+    var loot = getStuffed();
+    
+    var drops = [
+        {from: '/equipment',         luck:1.0, stack:1 },
+        {from: '/equipment/armor',   luck:0.5, stack:2 },
+        {from: '/equipment/weapons', luck:0.8, stack:2 }
+    ];
+
+    var reward = loot.loot(drops);
+
+    test.ok(reward.length > 0, 'we got the reward we deserve');
+
+    test.done();
+};
+
+exports['10000 rolls stats'] = function(test) {
+
+    var loot  = getStuffed();
+    var all   = loot.allItems();
+
+    var drops = [
+        {from: '/equipment',         luck:1.0, stack:1, depth:1 },
+        {from: '/equipment/weapons', luck:0.8, stack:1, depth:1 },
+        {from: '/equipment/armor',   luck:0.5, stack:1, depth:1 }
+    ];
+
+    var rolls = 10000;
+    var overallRewards   = {};
+    overallRewards.count = 0;
+
+    for (var i = 0; i < rolls; i++) {
+        var reward = loot.loot(drops);
+
+        for (var r = 0; r < reward.length; r++) {
+            overallRewards[ reward[r].name ] = (overallRewards[ reward[r].name ] || 0) + 1;
+            overallRewards.count++;
+        }
+    }
+
+
+    var allPresent = true;
+    for (var rw = 0; rw < all.length; rw++) {
+        allPresent = allPresent && overallRewards[ all[rw].name ];
+    }
+    test.ok(allPresent, 'at least there is one of each');
+
+
+    test.ok( overallRewards.Stuff   >= rolls, 'everytime I get only grey stuff');
+
+    var weaponsRatio = ((overallRewards.Uzi + overallRewards.Pistol) / rolls).toFixed(2);
+    var armoryRatio  = ((overallRewards.Plates + overallRewards.Leather + overallRewards.Military_vest + overallRewards.CSI_cap) / rolls).toFixed(2);
+    test.ok(weaponsRatio >= 0.6 && weaponsRatio <= 0.9, 'I got only ' + weaponsRatio*100 + '% weapons');
+    test.ok(armoryRatio  >= 0.3 && armoryRatio  <= 0.7, 'I got only ' + armoryRatio*100  + '% armory');
+
 
     test.done();
 };
