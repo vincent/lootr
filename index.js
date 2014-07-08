@@ -5,9 +5,8 @@
  * Copyright 2014 Vincent Lark
  * Released under the MIT license
  */
-/*jshint onevar: false, indent:4 */
+/*jshint onevar: false, indent:4, strict: false */
 /*global module, define */
-'use strict';
 (function () {
 
      // global on the server, window in the browser
@@ -18,7 +17,7 @@
      * 
      * @param {string} name Name of that branch
      */
-    function Lootr (name) {
+    function Lootr(name) {
 
         name = name || 'root';
         name = this.clean(name);
@@ -189,9 +188,9 @@
      * Roll against a looting table
      * 
      * @param  {array} drops Loot table 
-     * ```[ {from: '/equipment',         luck:1.0, stack:1 },
-     *      {from: '/equipment/armor',   luck:0.5, stack:2 },
-     *      {from: '/equipment/weapons', luck:0.8, stack:2 } ]
+     * ```[ {from: '/equipment',         depth:Infinity, luck:1.0, stack:1 },
+     *      {from: '/equipment/armor',   depth:Infinity, luck:0.5, stack:2 },
+     *      {from: '/equipment/weapons', depth:Infinity, luck:0.8, stack:2 } ]
      * ```
      * 
      * @return {array}       Array of items
@@ -211,6 +210,7 @@
             var stack = drops[i].stack || 1;
 
             for (var c = 0; c < stack; c++) {
+                // clone the item from json
                 reward.push(JSON.parse(json));
             }
         }
@@ -233,5 +233,5 @@
     else {
         root.Lootr = Lootr;
     }
-})();
+}());
 
