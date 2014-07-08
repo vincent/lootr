@@ -38,37 +38,94 @@
           <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
         </div>
 
-        <h3>
-<a name="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+<div id="readme" class="clearfix announce instapaper_body md">
+    <span class="name">
+      <span class="octicon octicon-book"></span>
+      README.md
+    </span>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
+    <article class="markdown-body entry-content" itemprop="mainContentOfPage"><h1>
+<a name="user-content-lootr" class="anchor" href="#lootr" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lootr</h1>
 
-<pre><code>$ cd your_repo_root/repo_name
-$ git fetch origin
-$ git checkout gh-pages
-</code></pre>
+<p>A simple RPG-like looting system.</p>
 
-<p>If you're using the GitHub for Mac, simply sync your repository and you'll see the new branch.</p>
+<p>Heavily inspired from <a href="http://journal.stuffwithstuff.com/2014/07/05/dropping-loot">http://journal.stuffwithstuff.com/2014/07/05/dropping-loot</a></p>
 
-<h3>
-<a name="designer-templates" class="anchor" href="#designer-templates"><span class="octicon octicon-link"></span></a>Designer Templates</h3>
+<p><a href="vendor/otter-is-coming.jpg" target="_blank"><img src="vendor/otter-is-coming.jpg" alt="Lootr !" style="max-width:100%;"></a></p>
 
-<p>We've crafted some handsome templates for you to use. Go ahead and continue to layouts to browse through them. You can easily go back to edit your page before publishing. After publishing your page, you can revisit the page generator and switch to another theme. Your Page content will be preserved if it remained markdown format.</p>
+<h1>
+<a name="user-content-adding-items" class="anchor" href="#adding-items" aria-hidden="true"><span class="octicon octicon-link"></span></a>Adding items</h1>
 
-<h3>
-<a name="rather-drive-stick" class="anchor" href="#rather-drive-stick"><span class="octicon octicon-link"></span></a>Rather Drive Stick?</h3>
+<p>Lootr is organized as a tree. Get a new instance with</p>
 
-<p>If you prefer to not use the automatic generator, push a branch named <code>gh-pages</code> to your repository to create a page manually. In addition to supporting regular HTML content, GitHub Pages support Jekyll, a simple, blog aware static site generator written by our own Tom Preston-Werner. Jekyll makes it easy to create site-wide headers and footers without having to copy them across every page. It also offers intelligent blog support and other advanced templating features.</p>
+<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">loot</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Lootr</span><span class="p">(</span><span class="s1">'/equipment'</span><span class="p">)</span>
 
-<h3>
-<a name="authors-and-contributors" class="anchor" href="#authors-and-contributors"><span class="octicon octicon-link"></span></a>Authors and Contributors</h3>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Stuff'</span> <span class="p">})</span>
+</pre></div>
 
-<p>You can <a href="https://github.com/blog/821" class="user-mention">@mention</a> a GitHub username to generate a link to their profile. The resulting <code>&lt;a&gt;</code> element will link to the contributor's GitHub Profile. For example: In 2007, Chris Wanstrath (<a href="https://github.com/defunkt" class="user-mention">@defunkt</a>), PJ Hyett (<a href="https://github.com/pjhyett" class="user-mention">@pjhyett</a>), and Tom Preston-Werner (<a href="https://github.com/mojombo" class="user-mention">@mojombo</a>) founded GitHub.</p>
+<p>Each level is composed by a list of items in <code>loot.items</code> and nested branchs in <code>loot.branchs</code>.</p>
 
-<h3>
-<a name="support-or-contact" class="anchor" href="#support-or-contact"><span class="octicon octicon-link"></span></a>Support or Contact</h3>
+<p>Organize the loot repository by adding branchs</p>
 
-<p>Having trouble with Pages? Check out the documentation at <a href="http://help.github.com/pages">http://help.github.com/pages</a> or contact <a href="mailto:support@github.com">support@github.com</a> and we’ll help you sort it out.</p>
+<div class="highlight highlight-javascript"><pre><span class="nx">loot</span><span class="p">.</span><span class="nx">branch</span><span class="p">(</span><span class="s1">'weapons'</span><span class="p">)</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">branch</span><span class="p">(</span><span class="s1">'armor'</span><span class="p">)</span>
+</pre></div>
+
+<p>The <code>branch</code> method return itself, on which you can <code>add</code> items or add nested branchs.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">loot</span><span class="p">.</span><span class="nx">branch</span><span class="p">(</span><span class="s1">'/equipment/weapons'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Pistol'</span> <span class="p">})</span>
+    <span class="p">.</span><span class="nx">branch</span><span class="p">(</span><span class="s1">'automatic'</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Uzi'</span> <span class="p">})</span>
+
+<span class="nx">loot</span><span class="p">.</span><span class="nx">branch</span><span class="p">(</span><span class="s1">'/equipment/armor'</span><span class="p">)</span>
+    <span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Plates'</span> <span class="p">})</span>
+    <span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Leather'</span> <span class="p">})</span>
+</pre></div>
+
+<h1>
+<a name="user-content-rollin" class="anchor" href="#rollin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Rollin'</h1>
+
+<p>Random-pick something at top level with <code>Lootr.roll( path, depth = 0, chance = 1 )</code></p>
+
+<p>It will yield an item in the <code>path</code> branch or, if <code>depth</code> is given, in an up to <code>depth</code> deep branchs, if the depth-decreasing <code>chance</code> is greater than a <code>Math.random()</code></p>
+
+<div class="highlight highlight-javascript"><pre><span class="c1">// Loot something from top level</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">roll</span><span class="p">(</span><span class="s1">'/equipment'</span><span class="p">)</span>                        <span class="c1">// only 'Stuff'</span>
+
+<span class="c1">// Loot something from anywhere</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">roll</span><span class="p">(</span><span class="s1">'/equipment'</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">,</span> <span class="kc">Infinity</span><span class="p">)</span>    <span class="c1">// any item</span>
+
+<span class="c1">// Loot an armor</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">roll</span><span class="p">(</span><span class="s1">'/equipment/armor'</span><span class="p">)</span>                  <span class="c1">// one of [ 'Plates', 'Leather' ]</span>
+
+<span class="c1">// Loot a weapon</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">roll</span><span class="p">(</span><span class="s1">'/equipment/weapons'</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>             <span class="c1">// one of [ 'Pistol', 'Uzi' ]</span>
+
+</pre></div>
+
+<h1>
+<a name="user-content-lootin" class="anchor" href="#lootin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Lootin'</h1>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">deadMonster</span><span class="p">.</span><span class="nx">drops</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="nx">from</span><span class="o">:</span> <span class="s1">'/equipment'</span><span class="p">,</span>         <span class="nx">luck</span><span class="o">:</span><span class="mf">1.0</span><span class="p">,</span> <span class="nx">stack</span><span class="o">:</span><span class="mi">1</span> <span class="p">},</span>
+    <span class="p">{</span><span class="nx">from</span><span class="o">:</span> <span class="s1">'/equipment/armor'</span><span class="p">,</span>   <span class="nx">luck</span><span class="o">:</span><span class="mf">0.5</span><span class="p">,</span> <span class="nx">stack</span><span class="o">:</span><span class="mi">2</span> <span class="p">},</span>
+    <span class="p">{</span><span class="nx">from</span><span class="o">:</span> <span class="s1">'/equipment/weapons'</span><span class="p">,</span> <span class="nx">luck</span><span class="o">:</span><span class="mf">0.8</span><span class="p">,</span> <span class="nx">stack</span><span class="o">:</span><span class="mi">2</span> <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1">// Loot your reward from a dead monster</span>
+<span class="kd">var</span> <span class="nx">rewards</span> <span class="o">=</span> <span class="nx">loot</span><span class="p">.</span><span class="nx">loot</span><span class="p">(</span><span class="nx">deadMonster</span><span class="p">.</span><span class="nx">drops</span><span class="p">)</span>
+
+<span class="nx">rewards</span> <span class="o">=</span> <span class="p">[</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'Stuff'</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'Plates'</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'Uzi'</span><span class="p">},</span> <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'Uzi'</span><span class="p">}</span> <span class="p">]</span>
+</pre></div>
+
+<h1>
+<a name="user-content-tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h1>
+
+<p>A simple test suite is available <a href="/vincent/lootr/blob/master/test.html">here</a></p>
+
+<p>It also works with <code>npm test</code></p></article>
+  </div>
       </section>
 
     </div>
