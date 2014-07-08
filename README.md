@@ -82,6 +82,6 @@ rewards = [ {name:'Stuff'}, {name:'Plates'}, {name:'Uzi'}, {name:'Uzi'} ]
 Tests
 =====
 
-A simple test suite is available [here](./test.html)
+A simple test suite is available [here](http://vincent.github.io/lootr/test.html)
 
 It also works with `npm test`
