@@ -83,4 +83,5 @@ Tests
 =====
 
 A simple test suite is available [here](./test.html)
+
 It also works with `npm test`
