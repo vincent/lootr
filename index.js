@@ -6,14 +6,22 @@
  * Released under the MIT license
  */
 /*jshint onevar: false, indent:4 */
-/*global module: true */
+/*global module, define */
 'use strict';
 (function () {
 
+     // global on the server, window in the browser
+    var root = this;
+
+    /**
+     * Get a new branch
+     * 
+     * @param {string} name Name of that branch
+     */
     function Lootr (name) {
 
         name = name || 'root';
-        name = this.path(name);
+        name = this.clean(name);
 
         if (name.indexOf('/') > -1) {
             throw new Error('specified name should not contain a / separator');
@@ -25,31 +33,61 @@
         this.branchNames  = [];
     }
 
-    Lootr.prototype.path = function(path) {
+    /**
+     * Clean a path, trim left and right / characters
+     * 
+     * @param  {string} path Path to cleanup
+     * 
+     * @return {string}      A cleaned path
+     */
+    Lootr.prototype.clean = function(path) {
         return path.replace(/^\//g, '').replace(/\/$/g, '');
     };
 
-    Lootr.prototype.add = function(catalogPath, item) {
+    /**
+     * Add an item in that branch, or the nested branch specified
+     * 
+     * @param {object} item    Item to add
+     * @param {string} catalog Path to branch (or top level if null)
+     *
+     * @return {Lootr} The current branch
+     */
+    Lootr.prototype.add = function(item, path) {
 
-        if (item === undefined) {
-            this.items.push(catalogPath);
+        if (path === undefined) {
+            this.items.push(item);
         
         } else {
-            var branch = this.branch(catalogPath);
+            var branch = this.branch(path);
             branch.items.push(item);
         }
 
         return this;
     };
 
+    /**
+     * Return or create a new branch under the current one
+     * 
+     * @param  {string} name Branch name
+     * 
+     * @return {Lootr}       The branch
+     */
     Lootr.prototype.branch = function(name) {
 
         return this.getBranch(name, true);
     };
 
+    /**
+     * Return or create a new branch under the current one
+     * 
+     * @param  {string}  name   Branch name
+     * @param  {boolean} create If true, and the specified branch does not exist, create one
+     * 
+     * @return {Lootr}       The branch
+     */
     Lootr.prototype.getBranch = function(name, create) {
 
-        var path = this.path(name).split('/');
+        var path = this.clean(name).split('/');
 
         if (! this.branchs[path[0]] && path[0] != this.name && create) {
             this.branchNames.push(path[0]);
@@ -78,6 +116,11 @@
         }
     };
 
+    /**
+     * Return all items in the current and nested branchs
+     * 
+     * @return {array} Array of items
+     */
     Lootr.prototype.allItems = function() {
 
         var items = this.items.slice();
@@ -89,6 +132,14 @@
         return items;
     };
 
+    /**
+     * Randomly pick an item.
+     * 
+     * @param  {int}   allowedNesting Depth limit
+     * @param  {float} threshold      Chances (0-1) we go deeper 
+     * 
+     * @return {object}               Picked item
+     */
     Lootr.prototype.randomPick = function(allowedNesting, threshold) {
 
         var picked = [];
@@ -118,6 +169,15 @@
         return this.items.length > 0 ? picked[~~(Math.random() * picked.length)] : null;
     };
 
+    /**
+     * Randomly pick an item from the specified branch
+     * 
+     * @param  {string} catalogPath    Branch to get an item from
+     * @param  {int}    allowedNesting Depth limit
+     * @param  {float}  threshold      Chances (0-1) we go deeper 
+     * 
+     * @return {object}                Picked item
+     */
     Lootr.prototype.roll = function(catalogPath, nesting, threshold) {
 
         var branch = this.getBranch(catalogPath);
@@ -125,6 +185,17 @@
         return branch.randomPick(nesting, threshold === undefined ? 1.0 : threshold);
     };
 
+    /**
+     * Roll against a looting table
+     * 
+     * @param  {array} drops Loot table 
+     * ```[ {from: '/equipment',         luck:1.0, stack:1 },
+     *      {from: '/equipment/armor',   luck:0.5, stack:2 },
+     *      {from: '/equipment/weapons', luck:0.8, stack:2 } ]
+     * ```
+     * 
+     * @return {array}       Array of items
+     */
     Lootr.prototype.loot = function(drops) {
 
         var reward = [];
@@ -147,6 +218,20 @@
         return reward;
     };
 
-    module.exports = Lootr;
+
+    // Node.js
+    if (typeof module !== 'undefined' && module.exports) {
+        module.exports = Lootr;
+    }
+    // AMD / RequireJS
+    else if (typeof define !== 'undefined' && define.amd) {
+        define([], function () {
+            return Lootr;
+        });
+    }
+    // included directly via <script> tag
+    else {
+        root.Lootr = Lootr;
+    }
 })();
 
