@@ -120,6 +120,32 @@
 </pre></div>
 
 <h1>
+<a name="user-content-modifiers" class="anchor" href="#modifiers" aria-hidden="true"><span class="octicon octicon-link"></span></a>Modifiers</h1>
+
+<p>The library includes a basic modifiers system.</p>
+
+<p>Add some modifiers to affect the name of each looted item with <code>addNameModifiers</code>. They will be used as simple suffixes. Or, if they contain a <code>$property</code>, each property name will be replaced.</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">loot</span><span class="p">.</span><span class="nx">add</span><span class="p">({</span> <span class="nx">name</span><span class="o">:</span> <span class="s1">'Staff'</span><span class="p">,</span> <span class="nx">color</span><span class="o">:</span> <span class="s1">'golden'</span> <span class="p">})</span>
+<span class="nx">loot</span><span class="p">.</span><span class="nx">addNameModifiers</span><span class="p">([</span> <span class="s1">'from the shadows'</span><span class="p">,</span> <span class="s1">'A $color $name from the gods'</span> <span class="p">])</span>
+</pre></div>
+
+<p>Then, at loot time:</p>
+
+<div class="highlight highlight-javascript"><pre><span class="nx">deadMonster</span><span class="p">.</span><span class="nx">drops</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="nx">from</span><span class="o">:</span> <span class="s1">'/equipment'</span><span class="p">,</span> <span class="nx">stack</span><span class="o">:</span><span class="mi">2</span><span class="p">,</span> <span class="nx">modify</span><span class="o">:</span><span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="kc">true</span><span class="p">}</span> <span class="p">}</span>
+<span class="p">]</span>
+
+<span class="c1">// Loot your reward from a dead monster</span>
+<span class="kd">var</span> <span class="nx">rewards</span> <span class="o">=</span> <span class="nx">loot</span><span class="p">.</span><span class="nx">loot</span><span class="p">(</span><span class="nx">deadMonster</span><span class="p">.</span><span class="nx">drops</span><span class="p">)</span>
+
+<span class="nx">rewards</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'Staff from the shadows'</span><span class="p">},</span>
+    <span class="p">{</span><span class="nx">name</span><span class="o">:</span><span class="s1">'A golden staff from the gods'</span><span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+
+<h1>
 <a name="user-content-tests" class="anchor" href="#tests" aria-hidden="true"><span class="octicon octicon-link"></span></a>Tests</h1>
 
 <p>A simple test suite is available <a href="http://vincent.github.io/lootr/test.html">here</a></p>
