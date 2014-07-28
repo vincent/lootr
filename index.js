@@ -26,14 +26,16 @@
             throw new Error('specified name should not contain a / separator');
         }
 
-        this.name         = name;
-        this.items        = [];
-        this.branchs      = {};
-        this.branchNames  = [];
+        this.name          = name;
+        this.items         = [];
+        this.branchs       = {};
+        this.branchNames   = [];
+        this.nameModifiers = [];
     }
 
     /**
-     * Clean a path, trim left and right / characters
+     * Clean a path, trim left and right / characters.
+     * This method is meant to be use internaly.
      * 
      * @param  {string} path Path to cleanup
      * 
@@ -206,18 +208,70 @@
                 continue;
             }
 
-            var json  = JSON.stringify(item);
-            var stack = drops[i].stack || 1;
+            var json   = JSON.stringify(item);
+            var stack  = drops[i].stack  || 1;
+            var modify = drops[i].modify || {};
 
             for (var c = 0; c < stack; c++) {
                 // clone the item from json
-                reward.push(JSON.parse(json));
+                var cloned = JSON.parse(json);
+
+                // handle modifiers
+                if (modify.name || modify.names) {
+                    cloned.name = this.modifyName(cloned);
+                }
+
+                reward.push(cloned);
             }
         }
 
         return reward;
     };
 
+    /**
+     * Add names modifiers.
+     * 
+     * @param {array} modifiers List of strings like [ 'from the shadows', '$name of the sun', 'Golden $name' ]
+     */
+    Lootr.prototype.addNameModifiers = function(modifiers) {
+        this.nameModifiers = this.nameModifiers.concat(modifiers);
+    };
+
+    /**
+     * Returns a new name from the given item.
+     * 
+     * @param  {object} item An item
+     * 
+     * @return {string}      A modified name, assuming there are modifiers available
+     */
+    Lootr.prototype.modifyName = function(item) {
+        var modifier = this.nameModifiers[~~(Math.random() * this.nameModifiers.length)];
+        if (modifier) {
+
+            // modifier is a regexp
+            if (modifier.indexOf('$') > -1) {
+
+                return modifier.replace(/(\$\w+)/g, this.modifyNameReplace.bind(item));
+
+            // modifier is a simple suffix
+            } else {
+
+                return item.name + ' ' + modifier;
+            }
+        }
+    };
+
+    /**
+     * Return the replacement for the given match.
+     * 
+     * @param  {string} match Matched token
+     * 
+     * @return {return}       A replacement string
+     */
+    Lootr.prototype.modifyNameReplace = function(match) {
+        // `this` is the current item to modify 
+        return this[match.substr(1)].toLowerCase();
+    };
 
     // Node.js
     if (typeof module !== 'undefined' && module.exports) {

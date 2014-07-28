@@ -27,7 +27,7 @@ loot.branch('weapons')
 loot.branch('armor')
 ```
 
-The `branch` method return itself, on which you can `add` items or add nested branchs.
+The `branch` method returns itself, on which you can `add` items or nested branchs.
 
 ```javascript
 loot.branch('/equipment/weapons')
@@ -78,6 +78,30 @@ var rewards = loot.loot(deadMonster.drops)
 rewards = [ {name:'Stuff'}, {name:'Plates'}, {name:'Uzi'}, {name:'Uzi'} ]
 ```
 
+Modifiers
+=====
+The library includes a basic modifiers system.
+
+Add some modifiers to affect the name of each looted item with `addNameModifiers`. They will be used as simple suffixes. Or, if they contain a `$property`, each property name will be replaced.
+```javascript
+loot.add({ name: 'Staff', color: 'golden' })
+loot.addNameModifiers([ 'from the shadows', 'A $color $name from the gods' ])
+```
+
+Then, at loot time:
+```javascript
+deadMonster.drops = [
+    {from: '/equipment', stack:2, modify:{name:true} }
+]
+
+// Loot your reward from a dead monster
+var rewards = loot.loot(deadMonster.drops)
+
+rewards = [
+    {name:'Staff from the shadows'},
+    {name:'A golden staff from the gods'}
+]
+```
 
 Tests
 =====

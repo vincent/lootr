@@ -15,7 +15,7 @@ function getStuffed () {
 
     var loot = new Lootr('equipment');
 
-    loot.add({ name: 'Stuff' });
+    loot.add({ name: 'Stuff', color: 'orange' });
 
     loot.branch('/equipment/weapons')
         .add({ name: 'Uzi' })
@@ -144,13 +144,26 @@ exports['10000 rolls stats'] = function(test) {
     test.ok(allPresent, 'at least there is one of each');
 
 
-    test.ok( overallRewards.Stuff   >= rolls, 'everytime I get only grey stuff');
+    test.ok( overallRewards.Stuff >= rolls, 'everytime I get only grey stuff');
 
     var weaponsRatio = ((overallRewards.Uzi + overallRewards.Pistol) / rolls).toFixed(2);
     var armoryRatio  = ((overallRewards.Plates + overallRewards.Leather + overallRewards.Military_vest + overallRewards.CSI_cap) / rolls).toFixed(2);
     test.ok(weaponsRatio >= 0.6 && weaponsRatio <= 0.9, 'I got only ' + weaponsRatio*100 + '% weapons');
     test.ok(armoryRatio  >= 0.3 && armoryRatio  <= 0.7, 'I got only ' + armoryRatio*100  + '% armory');
 
+
+    test.done();
+};
+
+exports['modifiers usage'] = function(test) {
+
+    var loot  = getStuffed();
+
+    loot.addNameModifiers([ 'from the shadows', '$name of the sun', 'Golden $name', 'An $color $name from the gods' ]);
+
+    var drops = [{from:'/equipment', luck:10, stack:10, depth:Infinity, modify:{name:true} }];
+
+    test.ok(loot.loot(drops).length > 0, 'Customized loots');
 
     test.done();
 };
