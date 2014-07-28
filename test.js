@@ -159,11 +159,17 @@ exports['modifiers usage'] = function(test) {
 
     var loot  = getStuffed();
 
-    loot.addNameModifiers([ 'from the shadows', '$name of the sun', 'Golden $name', 'An $color $name from the gods' ]);
+    loot.addNameModifiers([ 'from the shadows', '$name of the sun', 'Golden $unknown $name', 'An $color $name from the gods' ]);
 
     var drops = [{from:'/equipment', luck:10, stack:10, depth:Infinity, modify:{name:true} }];
 
-    test.ok(loot.loot(drops).length > 0, 'Customized loots');
+    var rewards = loot.loot(drops);
+
+    test.ok(rewards.length > 0, 'Customized loots');
+
+    // for (var i = 0; i < rewards.length; i++) {
+    //     console.log(rewards[i].name);
+    // }
 
     test.done();
 };

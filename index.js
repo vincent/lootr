@@ -251,7 +251,11 @@
             // modifier is a regexp
             if (modifier.indexOf('$') > -1) {
 
-                return modifier.replace(/(\$\w+)/g, this.modifyNameReplace.bind(item));
+                return modifier
+                        .replace(/(\$\w+)/g, this.modifyNameReplace.bind(item)) // replace property names
+                        .replace('  ', ' ') // in case we don't have the replacement name
+                        .replace(/^ +/, '')
+                        .replace(/ +$/, '');
 
             // modifier is a simple suffix
             } else {
@@ -270,7 +274,7 @@
      */
     Lootr.prototype.modifyNameReplace = function(match) {
         // `this` is the current item to modify 
-        return this[match.substr(1)].toLowerCase();
+        return (this[match.substr(1)] || '').toLowerCase();
     };
 
     // Node.js
