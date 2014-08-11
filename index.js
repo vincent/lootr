@@ -90,6 +90,10 @@
 
         var path = this.clean(name).split('/');
 
+        // if the asked branch does not begin with the current branch
+        // neither a first-level branch
+        // and we've been asked to create
+        // => create the asked branch
         if (! this.branchs[path[0]] && path[0] != this.name && create) {
             this.branchNames.push(path[0]);
             this.branchs[path[0]] = new Lootr(path[0]);
@@ -254,8 +258,7 @@
                 return modifier
                         .replace(/(\$\w+)/g, this.modifyNameReplace.bind(item)) // replace property names
                         .replace('  ', ' ') // in case we don't have the replacement name
-                        .replace(/^ +/, '')
-                        .replace(/ +$/, '');
+                        .trim();
 
             // modifier is a simple suffix
             } else {
