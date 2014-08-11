@@ -120,7 +120,7 @@ exports['10000 rolls stats'] = function(test) {
     var drops = [
         {from: '/equipment',         luck:1.0, stack:1, depth:1 },
         {from: '/equipment/weapons', luck:0.8, stack:1, depth:1 },
-        {from: '/equipment/armor',   luck:0.5, stack:1, depth:1 }
+        {from: '/equipment/armor',   luck:0.5, stack:'1-10', depth:1 }
     ];
 
     var rolls = 10000;
@@ -149,7 +149,7 @@ exports['10000 rolls stats'] = function(test) {
     var weaponsRatio = ((overallRewards.Uzi + overallRewards.Pistol) / rolls).toFixed(2);
     var armoryRatio  = ((overallRewards.Plates + overallRewards.Leather + overallRewards.Military_vest + overallRewards.CSI_cap) / rolls).toFixed(2);
     test.ok(weaponsRatio >= 0.6 && weaponsRatio <= 0.9, 'I got only ' + weaponsRatio*100 + '% weapons');
-    test.ok(armoryRatio  >= 0.3 && armoryRatio  <= 0.7, 'I got only ' + armoryRatio*100  + '% armory');
+    test.ok(armoryRatio  >= 3.0 && armoryRatio  <= 70, 'I got only ' + armoryRatio*100  + '% armory');
 
 
     test.done();

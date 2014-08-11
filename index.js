@@ -46,6 +46,31 @@
     };
 
     /**
+     * Return a random number in the specified range.
+     * This method is meant to be use internaly.
+     * 
+     * @param  {string} range x-y
+     * 
+     * @return {number} Random number in range
+     */
+    Lootr.prototype.randomInRange = function(range) {
+        var bounds = range.split('-');
+
+        switch (bounds.length) {
+            case 0:
+                bounds = [ 0, 5 ];
+                break;
+            case 1:
+                bounds = [ bounds[0], bounds[0] + 5 ];
+                break;
+            default:
+                bounds = [ bounds[0], bounds[bounds.length - 1] ];
+        }        
+
+        return Math.floor(Math.random() * (bounds[1] - bounds[0] + 1)) + bounds[0];
+    };
+
+    /**
      * Add an item in that branch, or the nested branch specified
      * 
      * @param {object} item    Item to add
@@ -150,7 +175,7 @@
         var picked = [];
 
         if (threshold === undefined) {
-            threshold = 0.9;
+            threshold = 1;
         }
 
         if (Math.random() < threshold && this.items.length > 0) {
@@ -196,7 +221,7 @@
      * @param  {array} drops Loot table 
      * ```[ {from: '/equipment',         depth:Infinity, luck:1.0, stack:1 },
      *      {from: '/equipment/armor',   depth:Infinity, luck:0.5, stack:2 },
-     *      {from: '/equipment/weapons', depth:Infinity, luck:0.8, stack:2 } ]
+     *      {from: '/equipment/weapons', depth:Infinity, luck:0.8, stack:'2-10' } ]
      * ```
      * 
      * @return {array}       Array of items
@@ -213,7 +238,9 @@
             }
 
             var json   = JSON.stringify(item);
-            var stack  = drops[i].stack  || 1;
+            var stack  = !drops[i].stack ? 1 : (
+                            (''+ drops[i].stack).indexOf('-') > -1 ? this.randomInRange(drops[i].stack) :
+                                drops[i].stack);   
             var modify = drops[i].modify || {};
 
             for (var c = 0; c < stack; c++) {

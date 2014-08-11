@@ -65,11 +65,13 @@ loot.roll('/equipment/weapons', 3)             // one of [ 'Pistol', 'Uzi' ]
 Lootin'
 =====
 
+Loot against a loot table, described by a definition array like the following. The string stack value allow random stacks in the specified range.
+
 ```javascript
 deadMonster.drops = [
     {from: '/equipment',         luck:1.0, stack:1 },
     {from: '/equipment/armor',   luck:0.5, stack:2 },
-    {from: '/equipment/weapons', luck:0.8, stack:2 }
+    {from: '/equipment/weapons', luck:0.8, stack:'2-10' }
 ]
 
 // Loot your reward from a dead monster
