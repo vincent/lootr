@@ -24,7 +24,7 @@ function getStuffed () {
     loot.branch('/equipment/armor')
         .add({ name: 'Plates' })
         .add({ name: 'Leather' });
-                        
+
     loot.branch('/equipment/armor/tough')
         .add({ name: 'Military_vest' })
         .add({ name: 'CSI_cap' });
@@ -44,7 +44,7 @@ exports['looting setup assertions'] = function (test) {
     test.doesNotThrow(
       function() {
         new Lootr('/notfaultypath');
-      }, 
+      },
       Error,
       'Does not fail if /-prefixed named branch'
     );
@@ -52,7 +52,7 @@ exports['looting setup assertions'] = function (test) {
     test.doesNotThrow(
       function() {
         new Lootr('notfaultypath/');
-      }, 
+      },
       Error,
       'Does not fail if /-suffixed named branch'
     );
@@ -60,7 +60,7 @@ exports['looting setup assertions'] = function (test) {
     test.throws(
       function() {
         new Lootr('/faulty/path');
-      }, 
+      },
       Error,
       'Show fail for faulty named branch'
     );
@@ -85,11 +85,11 @@ exports['rollin usage'] = function(test) {
     test.ok(all.indexOf(loot.roll('/equipment', 3, 100).name) > -1, 'Should loot any equipment');
 
     test.ok(all.indexOf(loot.roll('/equipment', Infinity, Infinity).name) > -1, 'Should loot any equipment');
-    
+
     test.ok(weapons.indexOf(loot.roll('/equipment/weapons', 3).name) > -1, 'Should loot a weapon');
-    
+
     test.ok(simplarmors.indexOf(loot.roll('/equipment/armor').name) > -1, 'Should loot a simple armor');
-    
+
     test.ok([].concat(simplarmors, tougharmors).indexOf(loot.roll('/equipment/armor', 1).name) > -1, 'Should loot an armor');
 
     test.done();
@@ -98,7 +98,7 @@ exports['rollin usage'] = function(test) {
 exports['rollin usage'] = function(test) {
 
     var loot = getStuffed();
-    
+
     var drops = [
         {from: '/equipment',         luck:1.0, stack:1 },
         {from: '/equipment/armor',   luck:0.5, stack:2 },
@@ -123,7 +123,7 @@ exports['10000 rolls stats'] = function(test) {
         {from: '/equipment/armor',   luck:0.5, stack:'1-10', depth:1 }
     ];
 
-    var rolls = 10000;
+    var rolls = 1000;
     var overallRewards   = {};
     overallRewards.count = 0;
 
@@ -149,7 +149,7 @@ exports['10000 rolls stats'] = function(test) {
     var weaponsRatio = ((overallRewards.Uzi + overallRewards.Pistol) / rolls).toFixed(2);
     var armoryRatio  = ((overallRewards.Plates + overallRewards.Leather + overallRewards.Military_vest + overallRewards.CSI_cap) / rolls).toFixed(2);
     test.ok(weaponsRatio >= 0.6 && weaponsRatio <= 0.9, 'I got only ' + weaponsRatio*100 + '% weapons');
-    test.ok(armoryRatio  >= 3.0 && armoryRatio  <= 70, 'I got only ' + armoryRatio*100  + '% armory');
+    test.ok(armoryRatio  >= 2   && armoryRatio  <= 7  , 'I got only ' + armoryRatio*100  + '% armory');
 
 
     test.done();
@@ -159,17 +159,36 @@ exports['modifiers usage'] = function(test) {
 
     var loot  = getStuffed();
 
-    loot.addNameModifiers([ 'from the shadows', '$name of the sun', 'Golden $unknown $name', 'An $color $name from the gods' ]);
+    loot.setModifiers([
 
-    var drops = [{from:'/equipment', luck:10, stack:10, depth:Infinity, modify:{name:true} }];
+        { name:    'from the shadows',
+          agility: '+4' },
+
+        { name:    '$name of the sun',
+          intel:   '*10' },
+
+        { name:    'Golden $unknown $name',
+          force:   '-1' },
+
+        { name:    'An $color $name from the gods',
+          mana:    '/2' },
+
+        { name:    'of agility',
+          agility: '4-10' },
+
+        { name:    'An $color $name from the gods',
+          mana:    '10' }
+    ]);
+
+    var drops = [{ from:'/equipment', luck:10, stack:10, depth:Infinity, modify:true }];
 
     var rewards = loot.loot(drops);
 
     test.ok(rewards.length > 0, 'Customized loots');
 
-    // for (var i = 0; i < rewards.length; i++) {
-    //     console.log(rewards[i].name);
-    // }
+    for (var i = 0; i < rewards.length; i++) {
+        console.log(rewards[i]);
+    }
 
     test.done();
 };

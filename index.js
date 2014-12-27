@@ -1,5 +1,5 @@
 /*!
- * lootr 
+ * lootr
  * https://github.com/vincent/lootr
  *
  * Copyright 2014 Vincent Lark
@@ -14,7 +14,7 @@
 
     /**
      * Get a new branch
-     * 
+     *
      * @param {string} name Name of that branch
      */
     function Lootr(name) {
@@ -26,19 +26,19 @@
             throw new Error('specified name should not contain a / separator');
         }
 
-        this.name          = name;
-        this.items         = [];
-        this.branchs       = {};
-        this.branchNames   = [];
-        this.nameModifiers = [];
+        this.name        = name;
+        this.items       = [];
+        this.branchs     = {};
+        this.branchNames = [];
+        this.modifiers   = [];
     }
 
     /**
      * Clean a path, trim left and right / characters.
      * This method is meant to be use internaly.
-     * 
+     *
      * @param  {string} path Path to cleanup
-     * 
+     *
      * @return {string}      A cleaned path
      */
     Lootr.prototype.clean = function(path) {
@@ -48,9 +48,9 @@
     /**
      * Return a random number in the specified range.
      * This method is meant to be use internaly.
-     * 
+     *
      * @param  {string} range x-y
-     * 
+     *
      * @return {number} Random number in range
      */
     Lootr.prototype.randomInRange = function(range) {
@@ -61,18 +61,21 @@
                 bounds = [ 0, 5 ];
                 break;
             case 1:
-                bounds = [ bounds[0], bounds[0] + 5 ];
+                bounds = [ bounds[0], parseInt(bounds[0],0) + 5 ];
                 break;
             default:
                 bounds = [ bounds[0], bounds[bounds.length - 1] ];
-        }        
+        }
+
+        bounds[0] = parseInt(bounds[0], 0);
+        bounds[1] = parseInt(bounds[1], 0);
 
         return Math.floor(Math.random() * (bounds[1] - bounds[0] + 1)) + bounds[0];
     };
 
     /**
      * Add an item in that branch, or the nested branch specified
-     * 
+     *
      * @param {object} item    Item to add
      * @param {string} catalog Path to branch (or top level if null)
      *
@@ -82,7 +85,7 @@
 
         if (path === undefined) {
             this.items.push(item);
-        
+
         } else {
             var branch = this.branch(path);
             branch.items.push(item);
@@ -93,9 +96,9 @@
 
     /**
      * Return or create a new branch under the current one
-     * 
+     *
      * @param  {string} name Branch name
-     * 
+     *
      * @return {Lootr}       The branch
      */
     Lootr.prototype.branch = function(name) {
@@ -105,10 +108,10 @@
 
     /**
      * Return or create a new branch under the current one
-     * 
+     *
      * @param  {string}  name   Branch name
      * @param  {boolean} create If true, and the specified branch does not exist, create one
-     * 
+     *
      * @return {Lootr}       The branch
      */
     Lootr.prototype.getBranch = function(name, create) {
@@ -148,7 +151,7 @@
 
     /**
      * Return all items in the current and nested branchs
-     * 
+     *
      * @return {array} Array of items
      */
     Lootr.prototype.allItems = function() {
@@ -164,10 +167,10 @@
 
     /**
      * Randomly pick an item.
-     * 
+     *
      * @param  {int}   allowedNesting Depth limit
-     * @param  {float} threshold      Chances (0-1) we go deeper 
-     * 
+     * @param  {float} threshold      Chances (0-1) we go deeper
+     *
      * @return {object}               Picked item
      */
     Lootr.prototype.randomPick = function(allowedNesting, threshold) {
@@ -195,17 +198,17 @@
                 }
             }
         }
-        
+
         return this.items.length > 0 ? picked[~~(Math.random() * picked.length)] : null;
     };
 
     /**
      * Randomly pick an item from the specified branch
-     * 
+     *
      * @param  {string} catalogPath    Branch to get an item from
      * @param  {int}    allowedNesting Depth limit
-     * @param  {float}  threshold      Chances (0-1) we go deeper 
-     * 
+     * @param  {float}  threshold      Chances (0-1) we go deeper
+     *
      * @return {object}                Picked item
      */
     Lootr.prototype.roll = function(catalogPath, nesting, threshold) {
@@ -217,18 +220,18 @@
 
     /**
      * Roll against a looting table
-     * 
-     * @param  {array} drops Loot table 
+     *
+     * @param  {array} drops Loot table
      * ```[ {from: '/equipment',         depth:Infinity, luck:1.0, stack:1 },
      *      {from: '/equipment/armor',   depth:Infinity, luck:0.5, stack:2 },
      *      {from: '/equipment/weapons', depth:Infinity, luck:0.8, stack:'2-10' } ]
      * ```
-     * 
+     *
      * @return {array}       Array of items
      */
     Lootr.prototype.loot = function(drops) {
 
-        var reward = [];
+        var rewards = [];
 
         for (var i = 0; i < drops.length; i++) {
             var item  = this.roll(drops[i].from, drops[i].depth || Infinity, drops[i].luck);
@@ -239,73 +242,137 @@
 
             var json   = JSON.stringify(item);
             var stack  = !drops[i].stack ? 1 : (
-                            (''+ drops[i].stack).indexOf('-') > -1 ? this.randomInRange(drops[i].stack) :
-                                drops[i].stack);   
-            var modify = drops[i].modify || {};
+                          ((''+ drops[i].stack).indexOf('-')) > -1 ? this.randomInRange(drops[i].stack) :
+                              drops[i].stack);
+            var modify = drops[i].modify;
+
+            console.log(drops[i].stack, '=>', stack);
 
             for (var c = 0; c < stack; c++) {
                 // clone the item from json
                 var cloned = JSON.parse(json);
 
                 // handle modifiers
-                if (modify.name || modify.names) {
-                    cloned.name = this.modifyName(cloned);
+                if (modify) {
+                    var modifier = this.modifiers[~~(Math.random() * this.modifiers.length)];
+
+                    if (modifier) {
+                        this.modify(cloned, modifier);
+                    }
                 }
 
-                reward.push(cloned);
+                rewards.push(cloned);
             }
         }
 
-        return reward;
+        return rewards;
     };
 
     /**
-     * Add names modifiers.
-     * 
+     * Add modifiers.
+     *
      * @param {array} modifiers List of strings like [ 'from the shadows', '$name of the sun', 'Golden $name' ]
      */
-    Lootr.prototype.addNameModifiers = function(modifiers) {
-        this.nameModifiers = this.nameModifiers.concat(modifiers);
+    Lootr.prototype.setModifiers = function(modifiers) {
+
+        this.modifiers = modifiers;
+    };
+
+    /**
+     * Add modifiers.
+     *
+     * @param {array} modifiers List of strings like [ 'from the shadows', '$name of the sun', 'Golden $name' ]
+     */
+    Lootr.prototype.addModifier = function(modifier) {
+
+        this.modifiers = modifiers || [];
+        this.modifiers.push(modifier);
     };
 
     /**
      * Returns a new name from the given item.
-     * 
+     *
      * @param  {object} item An item
-     * 
+     *
      * @return {string}      A modified name, assuming there are modifiers available
      */
-    Lootr.prototype.modifyName = function(item) {
-        var modifier = this.nameModifiers[~~(Math.random() * this.nameModifiers.length)];
-        if (modifier) {
+    Lootr.prototype.modify = function(item, modifier) {
+
+        var modifierValues = {},
+            modifier       = JSON.parse(JSON.stringify(modifier));
+
+        // we have a name modifier
+        if (modifier.name) {
 
             // modifier is a regexp
-            if (modifier.indexOf('$') > -1) {
+            if (modifier.name.indexOf('$') > -1) {
 
-                return modifier
-                        .replace(/(\$\w+)/g, this.modifyNameReplace.bind(item)) // replace property names
-                        .replace('  ', ' ') // in case we don't have the replacement name
-                        .trim();
+                item.name = modifier.name
+                                // replace property names
+                                .replace(/(\$\w+)/g, this.modifyNameReplace.bind(item))
+                                // in case we don't have the replacement name
+                                .replace('  ', ' ')
+                                // clean
+                                .trim();
 
             // modifier is a simple suffix
             } else {
 
-                return item.name + ' ' + modifier;
+                item.name += ' ' + modifier.name;
+            }
+
+            delete modifier.name;
+        }
+
+        // all other modifiers
+        for (key in modifier) {
+
+            var propModifier = modifier[key];
+
+            // function giver
+            if (typeof propModifier === 'Function') {
+
+                item[key] = propModifier(item);
+
+            // math expression given
+            } else if (propModifier.match(/^[\*\+\-\/]\d+$/)) {
+
+                try {
+                    item[key] = Math.max(0, eval((item[key]||0) + ' ' + propModifier));
+                } catch (e) {
+
+                }
+
+            // range given
+            } else {
+
+                item[key] = this.randomInRange(propModifier);
+
             }
         }
+
+    };
+
+    Lootr.prototype.modifyProps = function(item, modifier) {
+
+        return {};
     };
 
     /**
      * Return the replacement for the given match.
-     * 
+     *
      * @param  {string} match Matched token
-     * 
+     *
      * @return {return}       A replacement string
      */
     Lootr.prototype.modifyNameReplace = function(match) {
-        // `this` is the current item to modify 
+        // `this` is the current item to modify
         return (this[match.substr(1)] || '').toLowerCase();
     };
+
+
+    ////////////////////////////////////////////////////////
+
 
     // Node.js
     if (typeof module !== 'undefined' && module.exports) {
