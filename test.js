@@ -186,9 +186,9 @@ exports['modifiers usage'] = function(test) {
 
     test.ok(rewards.length > 0, 'Customized loots');
 
-    for (var i = 0; i < rewards.length; i++) {
-        console.log(rewards[i]);
-    }
+    // for (var i = 0; i < rewards.length; i++) {
+    //     console.log(rewards[i]);
+    // }
 
     test.done();
 };

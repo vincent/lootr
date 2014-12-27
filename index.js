@@ -246,8 +246,6 @@
                               drops[i].stack);
             var modify = drops[i].modify;
 
-            console.log(drops[i].stack, '=>', stack);
-
             for (var c = 0; c < stack; c++) {
                 // clone the item from json
                 var cloned = JSON.parse(json);

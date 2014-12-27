@@ -84,24 +84,36 @@ Modifiers
 =====
 The library includes a basic modifiers system.
 
-Add some modifiers to affect the name of each looted item with `addNameModifiers`. They will be used as simple suffixes. Or, if they contain a `$property`, each property name will be replaced.
+Add some modifiers to affect the properties of each looted item with `addModifiers`.
+* `name` modifier will be used as simple suffixes. Or, if it contains one or more `$property`, each property name will be replaced.
+* other properties will be handled as the following
 ```javascript
 loot.add({ name: 'Staff', color: 'golden' })
-loot.addNameModifiers([ 'from the shadows', 'A $color $name from the gods' ])
+loot.addModifiers([
+    { name:    'from the shadows' },
+    { name:    'A $color $name from the gods' },
+    { agility: 5 },
+    { force:   '*2' },
+    { intell:  '2-10' },
+    { name:    'A $color $name from the gods', force: '+4' }
+])
 ```
 
 Then, at loot time:
 ```javascript
 deadMonster.drops = [
-    {from: '/equipment', stack:2, modify:{name:true} }
+    {from: '/equipment', stack:2, modify:true }
 ]
 
 // Loot your reward from a dead monster
 var rewards = loot.loot(deadMonster.drops)
 
 rewards = [
+    // some of these could drop
     {name:'Staff from the shadows'},
-    {name:'A golden staff from the gods'}
+    {name:'Staff', intell: 6},
+    {name:'A golden staff from the gods'},
+    {name:'A golden staff from the gods', force:4 }
 ]
 ```
 
