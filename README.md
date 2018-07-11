@@ -5,6 +5,8 @@ A simple RPG-like looting system.
 
 Heavily inspired from http://journal.stuffwithstuff.com/2014/07/05/dropping-loot
 
+A C# version is available here https://github.com/Sparox/LootrCsharp
+
 ![Lootr !](./vendor/otter-is-coming.jpg)
 
 Adding items
