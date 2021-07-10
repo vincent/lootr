@@ -1,5 +1,5 @@
 {
-  "name": "lootr",
+  "name": "@airtonix/lootr",
   "version": "0.0.3",
   "description": "A simple rpg-like looting system",
   "main": "index.js",
@@ -8,19 +8,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vincent/lootr.git"
+    "url": "https://github.com/airtonix/lootr.git"
   },
   "keywords": [
     "game",
     "rpg",
     "loot"
   ],
-  "author": "Vincent Lark <vincent.lark@gmail.com>",
+  "author": "Airtonix <airtonix@users.noreply.github.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vincent/lootr/issues"
+    "url": "https://github.com/airtonix/lootr/issues"
   },
-  "homepage": "https://github.com/vincent/lootr",
+  "homepage": "https://github.com/airtonix/lootr",
   "dependencies": {
   },
   "devDependencies": {
