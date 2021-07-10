@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "editorconfig.editorconfig",
+    "orta.vscode-jest",
+    "kavod-io.vscode-jest-test-adapter"
+  ]
+}

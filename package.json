@@ -1,29 +1,48 @@
 {
   "name": "@airtonix/lootr",
-  "version": "0.0.3",
+  "version": "0.0.1",
+  "license": "MIT",
   "description": "A simple rpg-like looting system",
-  "main": "index.js",
-  "scripts": {
-    "test": "nodeunit ./test.js"
-  },
+  "author": "Airtonix <airtonix@users.noreply.github.com>",
+  "homepage": "https://github.com/airtonix/lootr",
+  "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/airtonix/lootr.git"
+    "url": "git+https://github.com/airtonix/lootr.git"
   },
   "keywords": [
     "game",
     "rpg",
     "loot"
   ],
-  "author": "Airtonix <airtonix@users.noreply.github.com>",
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/airtonix/lootr/issues"
   },
-  "homepage": "https://github.com/airtonix/lootr",
-  "dependencies": {
+  "main": "dist/airtonix-lootr.cjs.js",
+  "module": "dist/airtonix-lootr.esm.js",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "pnpm test -- --watchAll",
+    "prepare": "preconstruct build",
+    "postinstall": "manypkg check"
   },
-  "devDependencies": {
-    "nodeunit": "^0.9.0"    
+  "dependencies": {
+    "@manypkg/cli": "^0.18.0",
+    "@preconstruct/cli": "^2.1.0",
+    "@types/jest": "^26.0.24",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "husky": "^6.0.0",
+    "jest": "^27.0.6",
+    "jest-chain": "^1.1.5",
+    "jest-extended": "^0.11.5",
+    "lint-staged": "^11.0.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.0.5",
+    "ts-jest": "^27.0.3",
+    "ts-paths-resolve-plugin": "^5.2.3",
+    "typescript": "^4.3.5"
   }
 }

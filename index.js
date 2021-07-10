@@ -241,9 +241,12 @@
             }
 
             var json   = JSON.stringify(item);
-            var stack  = !drops[i].stack ? 1 : (
-                          ((''+ drops[i].stack).indexOf('-')) > -1 ? this.randomInRange(drops[i].stack) :
-                              drops[i].stack);
+            var stack  = !drops[i].stack
+                ? 1
+                : `${drops[i].stack}`.indexOf('-') > -1
+                    ? this.randomInRange(drops[i].stack)
+                    : drops[i].stack
+                ;
             var modify = drops[i].modify;
 
             for (var c = 0; c < stack; c++) {
@@ -387,4 +390,3 @@
         root.Lootr = Lootr;
     }
 }());
-
