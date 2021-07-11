@@ -1,10 +1,7 @@
-name: Merge Checks
+name: CI
 
 on:
-  push:
-    branches: [master]
   pull_request:
-    branches: [master]
 
 jobs:
   mergechecks:
@@ -30,3 +27,8 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - uses: actions/upload-artifact@v2 # upload test results
+        if: success() || failure() # run this step even if previous step failed
+        with:
+          name: test-results
+          path: jest-junit.xml
