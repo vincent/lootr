@@ -1,7 +1,9 @@
+import { CalculateModifier, GetModifierRuleString } from './CalculateModifier';
 import { Clean } from './Clean';
 import { IsFunction } from './IsFunction';
 import { IsString } from './IsString';
-import { ILootr, Item, LootTable, Modifier, Nesting, Threshold } from './types';
+import { IsRangeString, RandomInRange } from './RandomInRange';
+import { Item, LootTable, Modifier, Nesting, Threshold } from './types';
 
 export class Lootr {
   name: string;
@@ -23,34 +25,6 @@ export class Lootr {
   }
 
   /**
-   * Return a random number in the specified range.
-   * This method is meant to be use internaly.
-   *
-   * @param  {string} range x-y
-   *
-   * @return {number} Random number in range
-   */
-  randomInRange(range) {
-    let bounds = range.split('-');
-
-    switch (bounds.length) {
-      case 0:
-        bounds = [0, 5];
-        break;
-      case 1:
-        bounds = [bounds[0], parseInt(bounds[0], 0) + 5];
-        break;
-      default:
-        bounds = [bounds[0], bounds[bounds.length - 1]];
-    }
-
-    bounds[0] = parseInt(bounds[0], 0);
-    bounds[1] = parseInt(bounds[1], 0);
-
-    return Math.floor(Math.random() * (bounds[1] - bounds[0] + 1)) + bounds[0];
-  }
-
-  /**
    * Add an item in that branch, or the nested branch specified
    *
    * @param {object} item    Item to add
@@ -58,7 +32,7 @@ export class Lootr {
    *
    * @return {Lootr} The current branch
    */
-  add(item: Item, path?: string) {
+  add(item: Item, path?: string): InstanceType<typeof Lootr> {
     if (path === undefined) {
       this.items.push(item);
     } else {
@@ -128,7 +102,7 @@ export class Lootr {
    *
    * @return {array} Array of items
    */
-  allItems() {
+  allItems(): Item[] {
     return this.branchNames.reduce((results, branchName) => {
       return [...results, ...this.branches[branchName].allItems()];
     }, this.items.slice());
@@ -198,7 +172,7 @@ export class Lootr {
    *
    * @return {array}       Array of items
    */
-  loot(drops: LootTable) {
+  loot(drops: LootTable): Item[] {
     return drops.reduce((results, drop) => {
       const item = this.roll(drop.from, drop.depth || Infinity, drop.luck);
       if (!item) return results;
@@ -206,7 +180,7 @@ export class Lootr {
       const stack = !drop.stack
         ? 1
         : drop.stack.toString().indexOf('-') > -1
-        ? this.randomInRange(drop.stack)
+        ? RandomInRange(drop.stack)
         : drop.stack;
 
       return [
@@ -234,8 +208,9 @@ export class Lootr {
    *
    * @param {array} modifiers List of strings like [ 'from the shadows', '$name of the sun', 'Golden $name' ]
    */
-  setModifiers(modifiers: Modifier[]) {
+  setModifiers(modifiers: Modifier[]): InstanceType<typeof Lootr> {
     this.modifiers = modifiers;
+    return this;
   }
 
   /**
@@ -243,16 +218,15 @@ export class Lootr {
    *
    * @param {array} modifiers List of strings like [ 'from the shadows', '$name of the sun', 'Golden $name' ]
    */
-  addModifier(...modifiers: Modifier[]) {
+  addModifier(...modifiers: Modifier[]): InstanceType<typeof Lootr> {
     this.modifiers = [...(this.modifiers || []), ...modifiers];
+    return this;
   }
 
   /**
    * Returns a new name from the given item.
    *
    * @param  {object} item An item
-   *
-   * @return {string}      A modified name, assuming there are modifiers available
    */
   modify(item, modifier: Modifier) {
     const cloned = Object.assign({}, modifier);
@@ -263,7 +237,9 @@ export class Lootr {
       if (cloned.name.indexOf('$') > -1) {
         item.name = cloned.name
           // replace property names
-          .replace(/(\$\w+)/g, this.modifyNameReplace.bind(item))
+          .replace(/(\$\w+)/g, (token) =>
+            (item[token.substr(1)] || '').toLowerCase()
+          )
           // in case we don't have the replacement name
           .replace('  ', ' ')
           // clean
@@ -288,35 +264,17 @@ export class Lootr {
         // math expression given
       } else if (
         IsString(propModifier) &&
-        propModifier.match(/^[\*\+\-\/]\d+$/)
+        GetModifierRuleString(propModifier)
       ) {
-        try {
-          item[key] = Math.max(
-            0,
-            eval((propModifier || 0) + ' ' + propModifier)
-          );
-        } catch (e) {}
-
+        item[key] = CalculateModifier(item[key], propModifier);
         // range given
-      } else {
-        item[key] = this.randomInRange(propModifier);
+      } else if (IsString(propModifier) && IsRangeString(propModifier)) {
+        item[key] = RandomInRange(propModifier);
       }
     }
   }
 
   modifyProps(item, modifier: Modifier) {
     return {};
-  }
-
-  /**
-   * Return the replacement for the given match.
-   *
-   * @param  {string} match Matched token
-   *
-   * @return {return}       A replacement string
-   */
-  modifyNameReplace(match) {
-    // `this` is the current item to modify
-    return (this[match.substr(1)] || '').toLowerCase();
   }
 }

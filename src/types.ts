@@ -14,8 +14,6 @@ export type Threshold = number;
 
 export type Item = {
   name: string;
-  stack?: boolean;
-  modifier?: Modifier;
   [key: string]: any;
 };
 
@@ -24,7 +22,7 @@ export type LootTable = LootTableRow[];
 export type LootTableRow = {
   from: string;
   luck?: number;
-  stack?: number;
+  stack?: number | string;
   modify?: boolean;
   depth?: number;
 };

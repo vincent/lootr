@@ -77,5 +77,68 @@ describe('Lootr', () => {
     expect(loot.loot(drops).length).toBeGreaterThan(0);
   });
 
-  it('');
+  it('loot chance', () => {
+    const loot = GenerateStuff(new Lootr());
+    const all = loot.allItems();
+    const drops = [
+      { from: '/', luck: 1.0, stack: 3, depth: 1 },
+      { from: '/equipment', luck: 1.0, stack: 1, depth: 1 },
+      { from: '/equipment/weapons', luck: 0.8, stack: 1, depth: 1 },
+      { from: '/equipment/armor', luck: 0.5, stack: '1-10', depth: 1 },
+    ];
+
+    const rolls = 1000;
+    const overallRewards: Record<string, number> = {};
+    let overallRewardsCount = 0;
+    for (let count = 0; count < rolls; count++) {
+      const rewards = loot.loot(drops);
+      rewards.forEach((reward) => {
+        overallRewards[reward.name] = (overallRewards[reward.name] || 0) + 1;
+        overallRewardsCount++;
+      });
+    }
+
+    expect(
+      all.reduce((result, item) => result && !!overallRewards[item.name], true)
+    ).toBeTrue();
+  });
+
+  it('modifys loot', () => {
+    const loot = GenerateStuff(new Lootr());
+    loot.setModifiers([
+      { name: 'from the shadows', agility: '+4' },
+      { name: '$name of the sun', intel: '*10' },
+      { name: 'Golden $unknown $name', force: '-1' },
+      { name: 'An $color $name from the gods', mana: '/2' },
+      { name: 'of agility', agility: '4-10' },
+      { name: 'An $color $name from the gods', mana: '10' },
+    ]);
+
+    const drops = [
+      {
+        from: '/',
+        luck: 10,
+        stack: 10,
+        depth: Infinity,
+        modify: true,
+      },
+    ];
+    const rewards = loot.loot(drops);
+    expect(rewards.length).toBeGreaterThan(0);
+
+    const modified = GenerateStuff(new Lootr())
+      .setModifiers([{ name: 'of agility', agility: '4-10' }])
+      .loot([{ from: '/', depth: 1, modify: true }]);
+
+    expect(modified[0]).toHaveProperty('name');
+    expect(modified[0]).toHaveProperty('color');
+    expect(modified[0]).toHaveProperty('agility');
+    expect(modified[0].name).toInclude('of agility');
+    expect(modified[0].agility).toBeGreaterThanOrEqual(4);
+    expect(modified[0].agility).toBeLessThanOrEqual(10);
+
+    const modifiedMagicItem = GenerateStuff(new Lootr())
+      .setModifiers([{ name: 'An $color $name from the gods', mana: '/2' }])
+      .loot([{ from: '/', depth: 1, modify: true }]);
+  });
 });
