@@ -1,24 +1,19 @@
-name: Release Package
+name: Merge Checks
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
-  release:
+  mergechecks:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          # install version of node
           version: 14.17.3
-          # Setup .npmrc file to publish to GitHub Packages
-          registry-url: 'https://npm.pkg.github.com'
       - name: Cache pnpm modules
         uses: actions/cache@v2
         env:
@@ -32,6 +27,6 @@ jobs:
         with:
           version: 5.18.9
       - run: pnpm install
-      - run: pnpm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test

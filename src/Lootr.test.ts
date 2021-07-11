@@ -1,5 +1,4 @@
 import { Lootr } from './Lootr';
-import { Item } from './types';
 
 describe('Lootr', () => {
   const stuff = [{ name: 'Stuff', color: 'orange' }];
@@ -89,12 +88,10 @@ describe('Lootr', () => {
 
     const rolls = 1000;
     const overallRewards: Record<string, number> = {};
-    let overallRewardsCount = 0;
     for (let count = 0; count < rolls; count++) {
       const rewards = loot.loot(drops);
       rewards.forEach((reward) => {
         overallRewards[reward.name] = (overallRewards[reward.name] || 0) + 1;
-        overallRewardsCount++;
       });
     }
 
@@ -136,9 +133,5 @@ describe('Lootr', () => {
     expect(modified[0].name).toInclude('of agility');
     expect(modified[0].agility).toBeGreaterThanOrEqual(4);
     expect(modified[0].agility).toBeLessThanOrEqual(10);
-
-    const modifiedMagicItem = GenerateStuff(new Lootr())
-      .setModifiers([{ name: 'An $color $name from the gods', mana: '/2' }])
-      .loot([{ from: '/', depth: 1, modify: true }]);
   });
 });

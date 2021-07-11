@@ -273,8 +273,4 @@ export class Lootr {
       }
     }
   }
-
-  modifyProps(item, modifier: Modifier) {
-    return {};
-  }
 }

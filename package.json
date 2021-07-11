@@ -18,18 +18,19 @@
   "bugs": {
     "url": "https://github.com/airtonix/lootr/issues"
   },
-  "main": "dist/airtonix-lootr.cjs.js",
-  "module": "dist/airtonix-lootr.esm.js",
   "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --ext ts",
     "test": "jest",
     "test:watch": "pnpm test -- --watchAll",
-    "prepare": "preconstruct build",
-    "postinstall": "manypkg check"
+    "actions": "npm-run-all actions:*",
+    "actions:mergechecks": "act -j mergechecks",
+    "actions:release": "act -j release"
   },
-  "dependencies": {
-    "@manypkg/cli": "^0.18.0",
-    "@preconstruct/cli": "^2.1.0",
+  "devDependencies": {
     "@types/jest": "^26.0.24",
+    "@typescript-eslint/eslint-plugin": "^4.28.2",
+    "@typescript-eslint/parser": "^4.28.2",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-import": "^2.22.1",
