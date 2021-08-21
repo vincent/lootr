@@ -6,7 +6,6 @@ describe('IsFunction', () => {
     expect(IsFunction('() => {}')).toBeFalsy();
     expect(IsFunction(1)).toBeFalsy();
     expect(IsFunction(false)).toBeFalsy();
-    expect(IsFunction(class {})).toBeFalsy();
     expect(IsFunction(undefined)).toBeFalsy();
   });
 });

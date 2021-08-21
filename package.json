@@ -18,11 +18,14 @@
   "bugs": {
     "url": "https://github.com/airtonix/lootr/issues"
   },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts",
     "test": "jest",
     "test:watch": "pnpm test -- --watchAll",
+    "prepublish": "tsc",
     "actions": "npm-run-all actions:*",
     "actions:mergechecks": "act -j mergechecks",
     "actions:release": "act -j release"

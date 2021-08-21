@@ -64,37 +64,36 @@ export class Lootr {
    */
   getBranch(name: string, create?: boolean): InstanceType<typeof Lootr> {
     const path = Clean(name).split('/').filter(Boolean);
-
-    if (!path.length) return this;
+    const head = path[0];
 
     // if the asked branch does not begin with the current branch
     // neither a first-level branch
     // and we've been asked to create
     // => create the asked branch
-    if (!this.branches[path[0]] && path[0] != this.name && create) {
-      this.branchNames.push(path[0]);
-      this.branches[path[0]] = new Lootr(path[0]);
+    if (head && !this.branches[head] && head != this.name && create) {
+      this.branchNames.push(head);
+      this.branches[head] = new Lootr(head);
     }
 
-    // get a branch at current level
-    if (path.length === 1) {
-      return path[0] === this.name ? this : this.branches[path[0]];
-
-      // or nested
-    } else if (path.length > 1) {
-      const head = path.shift();
+    // Return nested
+    if (name && path.length > 1) {
+      path.shift();
       const newPath = path.join('/');
 
-      if (this.branches[head]) {
+      if (head && this.branches[head]) {
         return this.branches[head].getBranch(newPath, create);
-      }
-
-      if (create) {
+      } else if (head && create) {
         this.branchNames.push(head);
         this.branches[head] = new Lootr(head);
         return this.branches[head].getBranch(newPath, create);
       }
     }
+    // get a branch at current level
+    else if (!!name && path.length === 1) {
+      return path[0] === this.name ? this : this.branches[path[0]];
+    }
+
+    return this;
   }
 
   /**
@@ -116,31 +115,25 @@ export class Lootr {
    *
    * @return {object}               Picked item
    */
-  randomPick(allowedNesting: number, threshold: number = 1): Item {
-    const chance = Math.random() < threshold;
-    const shouldPickFromHere = chance && this.items.length > 0;
-    const fromHere =
-      shouldPickFromHere && this.items[~~(Math.random() * this.items.length)];
+  randomPick(allowedNesting: number, threshold: number = 1): Item | undefined {
+    const picks: Item[] = [];
+    const shouldPickFromHere =
+      Math.random() < threshold && this.items.length > 0;
+    if (shouldPickFromHere)
+      picks.push(this.items[~~(Math.random() * this.items.length)]);
 
-    const fromBelow =
-      (allowedNesting > 0 &&
-        this.branchNames
-          .reduce((results: Item[], branchName) => {
-            return [
-              ...results,
-              Math.random() <= threshold &&
-                this.branches[branchName].randomPick(
-                  allowedNesting - 1,
-                  threshold - Math.random() / allowedNesting
-                ),
-            ];
-          }, [])
-          .filter(Boolean)) ||
-      [];
+    if (allowedNesting > 0)
+      this.branchNames.forEach((branchName) => {
+        const shouldTryFromHere = Math.random() <= threshold;
+        if (!shouldTryFromHere) return;
+        const picked = this.branches[branchName].randomPick(
+          allowedNesting - 1,
+          threshold - Math.random() / allowedNesting
+        );
+        if (picked) picks.push(picked);
+      });
 
-    const picked = [fromHere, ...fromBelow].filter(Boolean);
-
-    return (picked.length && picked[~~(Math.random() * picked.length)]) || null;
+    return picks[~~(Math.random() * picks.length)];
   }
 
   /**
@@ -156,7 +149,7 @@ export class Lootr {
     const branch = this.getBranch(catalogPath);
 
     return branch.randomPick(
-      nesting,
+      nesting || 0,
       threshold === undefined ? 1.0 : threshold
     );
   }
@@ -173,7 +166,7 @@ export class Lootr {
    * @return {array}       Array of items
    */
   loot(drops: LootTable): Item[] {
-    return drops.reduce((results, drop) => {
+    return drops.reduce<Item[]>((results, drop) => {
       const item = this.roll(drop.from, drop.depth || Infinity, drop.luck);
       if (!item) return results;
 
@@ -228,7 +221,7 @@ export class Lootr {
    *
    * @param  {object} item An item
    */
-  modify(item, modifier: Modifier) {
+  modify(item: Item, modifier: Modifier) {
     const cloned = Object.assign({}, modifier);
 
     // we have a name modifier

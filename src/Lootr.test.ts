@@ -52,15 +52,15 @@ describe('Lootr', () => {
     const loot = GenerateStuff(new Lootr());
 
     expect(loot.roll('/')).toHaveProperty('name', stuffNames[0]);
-    expect(loot.roll('/equipment')).toBeNull();
+    expect(loot.roll('/equipment')).toBeUndefined();
     const equipmentRoll = loot.roll('/equipment', 3, 100);
-    expect(equipmentRoll.name).toBeOneOf(equipmentNames);
-    expect(loot.roll('/equipment', Infinity, Infinity).name).toBeOneOf(
+    expect(equipmentRoll?.name).toBeOneOf(equipmentNames);
+    expect(loot.roll('/equipment', Infinity, Infinity)?.name).toBeOneOf(
       allNames
     );
-    expect(loot.roll('/equipment/weapons', 3).name).toBeOneOf(weaponNames);
-    expect(loot.roll('/equipment/armor').name).toBeOneOf(simplarmorNames);
-    expect(loot.roll('/equipment/armor', 3).name).toBeOneOf([
+    expect(loot.roll('/equipment/weapons', 3)?.name).toBeOneOf(weaponNames);
+    expect(loot.roll('/equipment/armor')?.name).toBeOneOf(simplarmorNames);
+    expect(loot.roll('/equipment/armor', 3)?.name).toBeOneOf([
       ...simplarmorNames,
       ...tougharmorNames,
     ]);

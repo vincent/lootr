@@ -6,8 +6,7 @@ export interface ILootr {
 
 export type Modifier = {
   name?: string;
-  [key: string]: string | number | CallableFunction;
-};
+} & { [key: string]: string | number | CallableFunction };
 
 export type Nesting = number;
 export type Threshold = number;
