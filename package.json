@@ -20,6 +20,9 @@
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/"
+  ],
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext ts",
