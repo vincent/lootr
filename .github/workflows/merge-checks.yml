@@ -8,9 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          version: 14.17.3
+      - name: asdf_install
+        uses: asdf-vm/actions/install@v1
       - name: Cache pnpm modules
         uses: actions/cache@v2
         env:
@@ -20,15 +19,21 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 5.18.9
       - run: pnpm install
       - run: pnpm typecheck
       - run: pnpm lint
-      - run: pnpm test
+      - run: pnpm test -- --ci --reporters=default --reporters=jest-junit
+        env:
+          JEST_JUNIT_OUTPUT_DIR: reports
+          JEST_JUNIT_OUTPUT_NAME: jest-junit.xml
+          JEST_JUNIT_ANCESTOR_SEPARATOR: ' › '
+          JEST_JUNIT_UNIQUE_OUTPUT_NAME: false
+          JEST_JUNIT_SUITE_NAME: '{filepath}'
+          JEST_JUNIT_CLASSNAME: '{classname}'
+          JEST_JUNIT_TITLE: '{title}'
+
       - uses: actions/upload-artifact@v2 # upload test results
         if: success() || failure() # run this step even if previous step failed
         with:
           name: test-results
-          path: jest-junit.xml
+          path: reports/jest-junit.xml

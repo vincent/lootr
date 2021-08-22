@@ -1,6 +1,6 @@
 {
   "name": "@airtonix/lootr",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "license": "MIT",
   "description": "A simple rpg-like looting system",
   "author": "Airtonix <airtonix@users.noreply.github.com>",

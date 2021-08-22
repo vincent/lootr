@@ -13,12 +13,10 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
         with:
-          # install version of node
-          version: 14.17.3
-          # Setup .npmrc file to publish to GitHub Packages
-          registry-url: 'https://npm.pkg.github.com'
+          fetch-depth: 0
+      - name: asdf_install
+        uses: asdf-vm/actions/install@v1
       - name: Cache pnpm modules
         uses: actions/cache@v2
         env:
@@ -28,9 +26,6 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-${{ matrix.node-version }}-
-      - uses: pnpm/action-setup@v2.0.1
-        with:
-          version: 5.18.9
       - run: pnpm install
       - run: pnpm publish
         env:
