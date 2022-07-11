@@ -23,10 +23,10 @@ interface Item {
 
 interface Drop {
     from: string,
-    depth: number,
-    luck: number,
-    stack: number | Range,
-    modify: true
+    depth?: number,
+    luck?: number,
+    stack?: number | Range,
+    modify?: boolean
 }
 
 interface Modifier {
