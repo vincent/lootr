@@ -1,14 +1,14 @@
 export default class Lootr {
     constructor(name: string);
 
-    clean(path: string): string;
+    clean(path?: string): string;
     randomInRange(range: Range): number;
-    add(item: Item, path: string): Lootr;
+    add(item: Item, path?: string): Lootr;
     branch(name: string): Lootr;
-    getBranch(name: string, create: boolean): Lootr;
+    getBranch(name: string, create?: boolean): Lootr;
     allItems(): Item[];
-    randomPick(allowedNesting: number, threshold: number): Item;
-    roll(catalogPath: string, nesting: number, threshold: number): Item;
+    randomPick(allowedNesting: number, threshold?: number): Item;
+    roll(catalogPath: string, nesting?: number, threshold?: number): Item;
     loot(drops: Drop[]): Item[];
     setModifiers(modifiers: Modifier[]): void;
     addModifiers(modifiers: Modifier[]): void;
