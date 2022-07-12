@@ -1,5 +1,5 @@
 export default class Lootr {
-    constructor(name: string);
+    constructor(name?: string);
 
     clean(path?: string): string;
     randomInRange(range: Range): number;
